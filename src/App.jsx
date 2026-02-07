@@ -1,11 +1,34 @@
 import { useState } from "react";
 import lovesvg from "./assets/All You Need Is Love SVG Cut File.svg";
 import lovesvg2 from "./assets/Love In The Air SVG Cut File.svg";
+import emailjs from "@emailjs/browser";
+
+emailjs.init(import.meta.env.VITE_EMAILJS_PUBLIC_KEY);
 
 export default function Page() {
   const [noCount, setNoCount] = useState(0);
   const [yesPressed, setYesPressed] = useState(false);
   const yesButtonSize = noCount * 20 + 16;
+
+  const sendYesEmail = () => {
+    console.log("YES clicked – sending email");
+
+    emailjs.send(
+    import.meta.env.VITE_EMAILJS_SERVICE_ID,
+    import.meta.env.VITE_EMAILJS_TEMPLATE_ID,
+      {
+        app_name: "Valentine App 💖",
+        message: "Rhythm clicked YES 😍",
+        time: new Date().toLocaleString(),
+      }
+    )
+    .then(() => {
+      console.log("Email sent!");
+    })
+    .catch((err) => {
+      console.error("EmailJS error:", err.text || err);
+    });
+  };
 
   const handleNoClick = () => {
     setNoCount(noCount + 1);
@@ -61,13 +84,16 @@ export default function Page() {
             src="https://gifdb.com/images/high/cute-love-bear-roses-ou7zho5oosxnpo6k.webp"
           />
           <h1 className="text-4xl md:text-6xl my-4 text-center">
-            Will you be my Valentine?
+            Will you be my Valentine, Rhythm?
           </h1>
           <div className="flex flex-wrap justify-center gap-2 items-center">
             <button
               className={`bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-lg mr-4`}
               style={{ fontSize: yesButtonSize }}
-              onClick={() => setYesPressed(true)}
+              onClick={() => {
+                setYesPressed(true);
+                sendYesEmail();
+              }}
             >
               Yes
             </button>
